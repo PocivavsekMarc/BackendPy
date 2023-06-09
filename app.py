@@ -9,9 +9,9 @@ from firebase_admin import db
 from flask_socketio import SocketIO, emit
 
 import json
-import websocket
+#import websocket
 
-from websocket import create_connection
+#from websocket import create_connection
 
 app = Flask(__name__)
 CORS(app)
@@ -23,7 +23,7 @@ sestanki = []
 root = db.reference()
 
 sestanki_ref = root.child('sestanki')
-websocket = None
+ # websocket = None
 
 
 @app.route('/create-meeting', methods=['POST', 'OPTIONS'])
@@ -66,19 +66,19 @@ def join_meeting():
         sestanki_ref.child(room_key).update({'participants': room_participants})
 
         room['participants'] = room_participants  
-        socketio.emit('permission_request', room_key, room=room_key, namespace='/sestanki')
+       # socketio.emit('permission_request', room_key, room=room_key, namespace='/sestanki')
         return jsonify({'message': 'Uspešno pridružitev sestanku', 'room': room})
     else:
         return jsonify({'message': 'Sestanek ne obstaja', 'room': None}), 404
-def send_permission_request(room_key, room):
-    global websocket
-    if websocket is None:
-        websocket = create_connection('ws://192.168.0.14:5000/socket')
-    permission_request = {
-        'permission': True,
-        'email': room['participants'][0]  
-    }
-    websocket.send(json.dumps(permission_request))
+#def send_permission_request(room_key, room):
+ #   global websocket
+  #  if websocket is None:
+    #    websocket = create_connection('ws://192.168.0.14:5000/socket')
+    #permission_request = {
+     #   'permission': True,
+      #  'email': room['participants'][0]  
+    #}
+    #websocket.send(json.dumps(permission_request))
 
     
 @app.route('/meeting-participants', methods=['POST', 'OPTIONS'])
@@ -153,4 +153,4 @@ def _build_cors_prelight_response():
     return response
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5000)
+    app.run(app, host='0.0.0.0', port=5000)
